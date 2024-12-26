@@ -8,6 +8,9 @@ import { Form} from "@/components/ui/form";
 import CustomFormField from "../ui/CustomFormField";
 import { useState } from "react";
 import SubmitButton from "@/components/SubmitButton";
+import { UserFormValidation } from "@/lib/validation";
+import { create } from "domain";
+import { useRouter } from "next/router";
 
 export enum FormFieldType {
   INPUT = 'input',
@@ -22,17 +25,12 @@ export enum FormFieldType {
 
 
  
-const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-})
- 
  const PatientForm = () => {
+  const rounter = useRouter();
   const [isLoading, setLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof UserFormValidation>>({
+    resolver: zodResolver(UserFormValidation),
     defaultValues: {
       name: "",
       email:"",
@@ -43,9 +41,16 @@ const formSchema = z.object({
     },
   })
  
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-  
+ async function onSubmit({name, email, phone }: z.infer<typeof UserFormValidation>) {
+    setLoading(true);
+  try {
+   const userData ={ name, email, phone };
+    const user = await createUser(userData);
+    
+    if(user) rounter.push(`/patient/${user.$id}/register`)
+  }  catch (error) {
+    console.log(error);
+  }
   }
 
   return (
