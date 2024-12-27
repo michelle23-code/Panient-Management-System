@@ -1,2 +1,2 @@
-# Panient Management System
+# Patient Management System
  
