@@ -35,19 +35,20 @@ export enum FormFieldType {
       name: "",
       email:"",
       phone: "",
-      
-
-      
     },
   })
  
  async function onSubmit({name, email, phone }: z.infer<typeof UserFormValidation>) {
     setLoading(true);
   try {
-   const userData ={ name, email, phone };
-    const user = await createUser(userData);
+   const userData = { 
+    name,
+     email, 
+     phone };
+
+    const newUser = await createUser(userData);
     
-    if(user) rounter.push(`/patient/${user.$id}/register`)
+    if(newUser) rounter.push(`/patient/${newUser.$id}/register`)
   }  catch (error) {
     console.log(error);
   }
@@ -94,3 +95,13 @@ export enum FormFieldType {
 }
 
 export default PatientForm 
+
+
+async function createUser(userData: { name: string; email: string; phone: string; }) {
+  // Simulate an API call to create a user
+  return new Promise<{ $id: string }>((resolve) => {
+    setTimeout(() => {
+      resolve({ $id: "12345" });
+    }, 1000);
+  });
+}
